@@ -1,6 +1,8 @@
 <template>
-    <div>
-      <router-link :to="{name: 'Add'} ">Add new user</router-link>
+    <div class="main">
+<!--      <router-link :to="{name: 'Add'} ">Add new user</router-link>-->
+      <button class="main-button" @click="$router.push('login')">Login</button>
+      <button class="main-button" @click="$router.push('add')">Registry</button>
     </div>
 </template>
 
@@ -12,7 +14,7 @@ export default {
   name: "Home",
   created() {
     this.getUsers();
-    this.getUser();
+  //  this.getUser();
   },
   methods: {
     async getUsers(){
@@ -26,7 +28,7 @@ export default {
       }
       const response = await axios.get(`http://localhost:5000/users/${params.username}/${params.password}`);
       console.log('login as Przemek ', response);
-      if(response.data.Id > 0 ){
+      if(response.data.Id){
         console.log('user logged in!');
         Swal.fire({
           icon: 'success',
@@ -48,5 +50,27 @@ export default {
 </script>
 
 <style scoped>
+.main {
+  border: 2px black solid;
+  width: 100%;
+  height: 50vh;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.main-button {
+  width: 30vh;
+  height:10vh;
+  font-size: 32px;
+  font-weight: bold;
+  background-color: #008CBA;
+  color: white;
+  border-radius: 50px;
+  margin: 0 50px;
+  border: none;
+}
+.main-button:hover {
+  background-color: #066787;
+}
 
 </style>
