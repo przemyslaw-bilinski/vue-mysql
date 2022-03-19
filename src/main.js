@@ -25,9 +25,14 @@ const routes = [
     },
     {
         name: 'User',
-        path: '/user',
-        component: User
+        path: '/user/:name/:email',
+        component: User,
     },
+    {
+        name: 'Send',
+        path: '/send/:sender/:recipient/:subject/:message',
+        component: User,
+    }
 ];
 
 const router = createRouter({

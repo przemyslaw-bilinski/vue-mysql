@@ -32,9 +32,16 @@
 
 <script>
 import axios from "axios";
-const ER_DUP_ENTRY = 'ER_DUP_ENTRY';
 import Swal from 'sweetalert2';
 import { v4 as uuidv4 } from 'uuid';
+
+
+const ER_DUP_ENTRY = 'ER_DUP_ENTRY';
+const USER_DUPLICATE_NAME = 'Current user already exist in database!';
+const TITLE_ERROR = 'Error';
+const TITLE_SUCCESS = 'Success';
+const ICON_ERROR = 'error';
+const ICON_SUCCESS = 'success';
 export default {
   name: "AddUser",
   data() {
@@ -56,34 +63,27 @@ export default {
          PlateNumber: this.plateNumber,
          CreatedDate: new Date()
         });
-       console.log('response ', response);
-       console.log('response.data ', response.data);
-       console.log('response.data.code ', response.data.code);
-       console.log('ER_DUP_ENTRY ', ER_DUP_ENTRY);
        if(response.data.code === ER_DUP_ENTRY){
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Current user already exist in database!'
+        icon: ICON_ERROR,
+        title: TITLE_ERROR,
+        text: USER_DUPLICATE_NAME
       });
        }
        else {
          Swal.fire({
-           icon: 'success',
-           title: 'Success'
+           icon: ICON_SUCCESS,
+           title: TITLE_SUCCESS
          });
          this.name = '';
          this.email = '';
          this.password = '';
          this.plateNumber = '';
-         this.$router.push('/user');
+         this.$router.push({name: 'User', params: {name: this.name, email: this.email}});
        }
       } catch (error) {
         console.log('Error: ', error);
       }
-    },
-    generateUserId() {
-      console.log('uuidv4 ', uuidv4());
     }
   }
 }
