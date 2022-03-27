@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import Home from "./components/Home";
-import Add from "./components/AddUser";
+import Registry from "./components/Registry";
 import Login from "./components/Login";
 import User from "./components/User";
 import {createRouter, createWebHashHistory} from "vue-router";
@@ -9,27 +9,28 @@ import {createRouter, createWebHashHistory} from "vue-router";
 
 const routes = [
     {
-        name: 'Home',
+        name: 'home',
         path: '/',
         component: Home
     },
     {
-        name: 'Add',
-        path: '/add',
-        component: Add
+        name: 'registry',
+        path: '/registry',
+        component: Registry
     },
     {
-        name: 'Login',
+        name: 'login',
         path: '/login',
         component: Login
     },
     {
-        name: 'User',
+        name: 'user',
         path: '/user/:name/:email',
         component: User,
+        props: true
     },
     {
-        name: 'Send',
+        name: 'send',
         path: '/send/:sender/:recipient/:subject/:message',
         component: User,
     }

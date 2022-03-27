@@ -39,14 +39,15 @@ const ICON_SUCCESS = 'success';
 
 export default {
   name: "User",
-  created() {
-    this.name = this.$route.params.name;
+ /* created() {
+    this.name =
     this.sender = this.$route.params.email;
-  },
+  },*/
+  props: ['name', 'sender'],
   data() {
     return {
-      name: '',
-      sender: '',
+    /*  name: this.$route.params.name,
+      sender: this.$route.params.email,*/
       subject: '',
       message: '',
       plateNumber: ''

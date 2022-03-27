@@ -47,8 +47,7 @@ export default {
           icon: ICON_SUCCESS,
           title: TITLE_SUCCESS
         });
-       // this.$router.push('/user');
-        this.$router.push({ name: 'User', params: {name: response.data.Name, email:response.data.Email}} );
+        this.$router.push({ name: 'user', params: {name: response.data.Name, email:response.data.Email}} );
 
 
       }

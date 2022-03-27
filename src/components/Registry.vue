@@ -79,7 +79,7 @@ export default {
          this.email = '';
          this.password = '';
          this.plateNumber = '';
-         this.$router.push({name: 'User', params: {name: this.name, email: this.email}});
+         this.$router.push({name: 'user', params: {name: this.name, email: this.email}});
        }
       } catch (error) {
         console.log('Error: ', error);
