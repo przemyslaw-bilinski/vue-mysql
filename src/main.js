@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import axios from 'axios';
 import App from './App.vue'
 import Home from "./components/Home";
 import Registry from "./components/Registry";
@@ -6,6 +7,9 @@ import Login from "./components/Login";
 import User from "./components/User";
 import {createRouter, createWebHashHistory} from "vue-router";
 
+axios.defaults.baseURL = 'http://localhost:5000/';
+/*axios.defaults.headers.common['Authorization'] = localStorage.getItem('data');*/
+/*axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';*/
 
 const routes = [
     {
@@ -25,9 +29,15 @@ const routes = [
     },
     {
         name: 'user',
+        path: '/user',
+        component: User,
+        props: true,
+    },
+    {
+        name: 'user2',
         path: '/user/:name/:email',
         component: User,
-        props: true
+        props: true,
     },
     {
         name: 'send',

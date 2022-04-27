@@ -29,26 +29,66 @@ const ICON_SUCCESS = 'success';
 
 export default {
   name: "Login",
+  async created() {
+    let token = localStorage.getItem('data');
+    if (token){
+      const response = await axios.get('user',{
+        headers: {
+          Authorization: localStorage.getItem('data')
+        }
+      });
+      console.log('response in user ', response);
+      if(response.data) {
+        this.$router.push('/user');
+      }
+    }
+  },
   data() {
     return {
       email: '',
       password: ''
     }
   },
+ /* computed: {
+    loggedIn() {
+      console.log('this.$store.state.auth.status.loggedIn; ', this.$store.state.auth.status);
+      return this.$store.state.auth.status.loggedIn;
+    }
+  },*/
+ /* created() {
+    if (this.loggedIn) {
+      this.$router.push({name:'user', params: {}});
+    }
+  },*/
   methods: {
     async login() {
-      let params = {
+     /* let params = {
         email: this.email,
         password: this.password
-      }
-      const response = await axios.get(`http://localhost:5000/users/${params.email}/${params.password}`);
-      if (response.data.Id) {
+      }*/
+/*
+      const response = await axios.post(`http://localhost:5000/login, /${params.email}/${params.password}`);
+*/
+      const response = await axios.post('login', {
+          email: this.email,
+          password: this.password
+      })
+      console.log('## response ', response);
+      if (response.data.user.Id) {
         Swal.fire({
           icon: ICON_SUCCESS,
           title: TITLE_SUCCESS
         });
-        this.$router.push({ name: 'user', params: {name: response.data.Name, email:response.data.Email}} );
-
+        console.log('response.data.token ', response.data.token);
+        if(response.data.token) {
+          console.log('response.data ', response.data);
+          localStorage.setItem('data', JSON.stringify({
+            token: response.data.token,
+            user: response.data.user
+        }));
+          this.$router.push({ name: 'user'});
+        }
+       // this.$router.push({ name: 'user', params: {name: response.data.user.Name, email:response.data.user.Email}} );
 
       }
       else {

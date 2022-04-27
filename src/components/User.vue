@@ -39,15 +39,28 @@ const ICON_SUCCESS = 'success';
 
 export default {
   name: "User",
- /* created() {
-    this.name =
-    this.sender = this.$route.params.email;
-  },*/
-  props: ['name', 'sender'],
+  async created() {
+    let token = localStorage.getItem('data');
+    if (token) {
+      const response = await axios.get('user', {
+        headers: {
+          Authorization: localStorage.getItem('data')
+        }
+      });
+      console.log('response in user ', response);
+      if (!response.data) {
+        this.$router.push('/');
+      } else {
+        this.name = response.data.Name;
+        this.sender = response.data.Email;
+      }
+    }
+  },
+  /*props: ['name', 'sender'],*/
   data() {
     return {
-    /*  name: this.$route.params.name,
-      sender: this.$route.params.email,*/
+      name: '',
+      sender: '',
       subject: '',
       message: '',
       plateNumber: ''
@@ -67,7 +80,7 @@ export default {
       let params = {
         plateNumber: !(this.plateNumber === '') ? this.plateNumber : null
       }
-      const response = await axios.get(`http://localhost:5000/users/${params.plateNumber}`);
+      const response = await axios.get(`/users/${params.plateNumber}`);
       console.log('## response.data ', response.data);
       if (response.data.Id) {
         let messageParams = {
