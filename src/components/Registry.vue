@@ -1,33 +1,44 @@
 <template>
-<div class="registry-form">
-  <div class="field">
-    <label class="label">Name</label>
-    <div class="control">
-      <input class="input" type="text" v-model="name"/>
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-dark text-white" style="border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+
+            <div class="mb-md-5 mt-md-4 pb-5">
+
+              <h2 class="fw-bold mb-2 text-uppercase login-header">Sign up</h2>
+              <div class="field">
+                <label class="label">Name</label>
+                <div class="control">
+                  <input class="input" type="text" v-model="name"/>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Email</label>
+                <div class="control">
+                  <input class="input" type="email" v-model="email"/>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Password</label>
+                <div class="control">
+                  <input class="input" type="password" v-model="password"/>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Plate Number</label>
+                <div class="control">
+                  <input class="input" type="text" v-model="plateNumber"/>
+                </div>
+              </div>
+              <button class="btn btn-outline-light btn-lg px-5 mt-5" type="submit" @click="addUser">Sign up</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="field">
-    <label class="label">Email</label>
-    <div class="control">
-      <input class="input" type="email" v-model="email"/>
-    </div>
-  </div>
-  <div class="field">
-    <label class="label">Password</label>
-    <div class="control">
-      <input class="input" type="password" v-model="password"/>
-    </div>
-  </div>
-  <div class="field">
-    <label class="label">Plate Number</label>
-    <div class="control">
-      <input class="input" type="text" v-model="plateNumber"/>
-    </div>
-  </div>
-  <div class="control">
-    <button class="button" @click="addUser">SAVE</button>
-  </div>
-</div>
 </template>
 
 <script>
@@ -44,6 +55,12 @@ const ICON_ERROR = 'error';
 const ICON_SUCCESS = 'success';
 export default {
   name: "AddUser",
+  created() {
+    let token = localStorage.getItem('data');
+    if (token) {
+      this.$router.push('/user');
+    }
+  },
   data() {
     return {
       name: '',
@@ -55,7 +72,7 @@ export default {
   methods: {
    async addUser() {
       try {
-       const response = await axios.post('http://localhost:5000/users', {
+       const response = await axios.post('http://localhost:5000/registry', {
          Id: uuidv4(),
          Name: this.name,
          Email: this.email,
@@ -79,7 +96,13 @@ export default {
          this.email = '';
          this.password = '';
          this.plateNumber = '';
-         this.$router.push({name: 'user', params: {name: this.name, email: this.email}});
+         if (response.data.token) {
+           localStorage.setItem('data', JSON.stringify({
+             token: response.data.token,
+             user: response.data.user
+           }));
+           this.$router.push({name: 'user'});
+         }
        }
       } catch (error) {
         console.log('Error: ', error);
@@ -90,12 +113,31 @@ export default {
 </script>
 
 <style scoped>
-.registry-form {
-  border: 2px solid black;
-  padding: 50px;
-  width: 50%;
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+.login-header {
+  font-size: 4vh;
+}
+
+.label {
+  width: 80%;
   margin-left: auto;
-  margin-right:auto;
+  margin-right: auto;
+  color: white;
+  text-align: left;
+}
+.input {
+  width: 80%;
+  background-color: #262626;
+  color: white;
 }
 
 </style>

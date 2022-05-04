@@ -34,14 +34,20 @@ const routes = [
         props: true,
     },
     {
-        name: 'user2',
-        path: '/user/:name/:email',
+        name: 'update',
+        path: '/update',
+        component: User,
+        props: true,
+    },
+    {
+        name: 'email',
+        path: '/email',
         component: User,
         props: true,
     },
     {
         name: 'send',
-        path: '/send/:sender/:recipient/:subject/:message',
+        path: '/send',
         component: User,
     }
 ];
