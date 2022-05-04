@@ -12,6 +12,9 @@
                   <div class="control">
                     <input class="input" type="email" v-model="email"/>
                   </div>
+                  <span class="error" v-if="v$.email.$error">
+                    {{ v$.email.$errors[0].$message}}
+                  </span>
                 </div>
                 <div class="field">
                   <label class="label">Password</label>
@@ -38,6 +41,8 @@
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
+import useValidate from "@vuelidate/core";
+import { required, email} from '@vuelidate/validators';
 
 const TITLE_ERROR = 'Error';
 const TITLE_SUCCESS = 'Success';
@@ -55,37 +60,47 @@ export default {
   },
   data() {
     return {
+      v$: useValidate(),
       email: '',
       password: ''
     }
   },
+  validations() {
+    return {
+      email: {required, email},
+      password: {required}
+    }
+  },
+
   methods: {
     async login() {
-      const response = await axios.post('login', {
+      this.v$.$validate();
+      if (!this.v$.$error) {
+        const response = await axios.post('login', {
           email: this.email,
           password: this.password
-      })
-      if (response.data.user.Id) {
-        Swal.fire({
-          icon: ICON_SUCCESS,
-          title: TITLE_SUCCESS
-        });
-        console.log('response.data.token ', response.data.token);
-        if(response.data.token) {
-          localStorage.setItem('data', JSON.stringify({
-            token: response.data.token,
-            user: response.data.user
-        }));
-          this.$router.go(0);
-          this.$router.push({ name: 'user'});
+        })
+        if (response.data.user.Id) {
+          Swal.fire({
+            icon: ICON_SUCCESS,
+            title: TITLE_SUCCESS
+          });
+          console.log('response.data.token ', response.data.token);
+          if (response.data.token) {
+            localStorage.setItem('data', JSON.stringify({
+              token: response.data.token,
+              user: response.data.user
+            }));
+            this.$router.go(0);
+            this.$router.push({name: 'user'});
+          }
+        } else {
+          Swal.fire({
+            icon: ICON_ERROR,
+            title: TITLE_ERROR,
+            text: LOGIN_ERROR
+          });
         }
-      }
-      else {
-        Swal.fire({
-          icon: ICON_ERROR,
-          title: TITLE_ERROR,
-          text: LOGIN_ERROR
-        });
       }
     }
   }
@@ -118,5 +133,9 @@ export default {
   width: 80%;
   background-color: #262626;
   color: white;
+}
+
+.error {
+  color: #f13030;
 }
 </style>

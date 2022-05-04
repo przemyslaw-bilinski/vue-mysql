@@ -13,24 +13,36 @@
                 <div class="control">
                   <input class="input" type="text" v-model="name"/>
                 </div>
+                <span class="error" v-if="v$.name.$error">
+                    {{ v$.name.$errors[0].$message}}
+                  </span>
               </div>
               <div class="field">
                 <label class="label">Email</label>
                 <div class="control">
-                  <input class="input" type="email" v-model="email"/>
+                  <input class="input" type="email" required v-model="email"/>
                 </div>
+                <span class="error" v-if="v$.email.$error">
+                    {{ v$.email.$errors[0].$message}}
+                  </span>
               </div>
               <div class="field">
                 <label class="label">Password</label>
                 <div class="control">
                   <input class="input" type="password" v-model="password"/>
                 </div>
+                <span class="error" v-if="v$.password.$error">
+                    {{ v$.password.$errors[0].$message}}
+                  </span>
               </div>
               <div class="field">
                 <label class="label">Plate Number</label>
                 <div class="control">
                   <input class="input" type="text" v-model="plateNumber"/>
                 </div>
+                <span class="error" v-if="v$.plateNumber.$error">
+                    {{ v$.plateNumber.$errors[0].$message}}
+                  </span>
               </div>
               <button class="btn btn-outline-light btn-lg px-5 mt-5" type="submit" @click="addUser">Sign up</button>
             </div>
@@ -45,7 +57,8 @@
 import axios from "axios";
 import Swal from 'sweetalert2';
 import { v4 as uuidv4 } from 'uuid';
-
+import useValidate from '@vuelidate/core';
+import { required, email, minLength } from '@vuelidate/validators';
 
 const ER_DUP_ENTRY = 'ER_DUP_ENTRY';
 const USER_DUPLICATE_NAME = 'Current user already exist in database!';
@@ -63,49 +76,61 @@ export default {
   },
   data() {
     return {
+      v$: useValidate(),
       name: '',
       email: '',
       password: '',
       plateNumber: ''
     }
   },
+  validations() {
+    return {
+      name: {required},
+      password: {required, minLength: minLength(6)},
+      plateNumber: {required},
+      email: {required, email}
+    }
+  },
   methods: {
-   async addUser() {
-      try {
-       const response = await axios.post('http://localhost:5000/registry', {
-         Id: uuidv4(),
-         Name: this.name,
-         Email: this.email,
-         Password: this.password,
-         PlateNumber: this.plateNumber,
-         CreatedDate: new Date()
-        });
-       if(response.data.code === ER_DUP_ENTRY){
-      Swal.fire({
-        icon: ICON_ERROR,
-        title: TITLE_ERROR,
-        text: USER_DUPLICATE_NAME
-      });
-       }
-       else {
-         Swal.fire({
-           icon: ICON_SUCCESS,
-           title: TITLE_SUCCESS
-         });
-         this.name = '';
-         this.email = '';
-         this.password = '';
-         this.plateNumber = '';
-         if (response.data.token) {
-           localStorage.setItem('data', JSON.stringify({
-             token: response.data.token,
-             user: response.data.user
-           }));
-           this.$router.push({name: 'user'});
-         }
-       }
-      } catch (error) {
-        console.log('Error: ', error);
+    async addUser() {
+      console.log('this.v$ ', this.v$);
+      this.v$.$validate();
+      if (!this.v$.$error) {
+        try {
+          const response = await axios.post('http://localhost:5000/registry', {
+            Id: uuidv4(),
+            Name: this.name,
+            Email: this.email,
+            Password: this.password,
+            PlateNumber: this.plateNumber,
+            CreatedDate: new Date()
+          });
+          if (response.data.code === ER_DUP_ENTRY) {
+            Swal.fire({
+              icon: ICON_ERROR,
+              title: TITLE_ERROR,
+              text: USER_DUPLICATE_NAME
+            });
+          } else {
+            Swal.fire({
+              icon: ICON_SUCCESS,
+              title: TITLE_SUCCESS
+            });
+            this.name = '';
+            this.email = '';
+            this.password = '';
+            this.plateNumber = '';
+            if (response.data.token) {
+              localStorage.setItem('data', JSON.stringify({
+                token: response.data.token,
+                user: response.data.user
+              }));
+              this.$router.push({name: 'user'});
+            }
+          }
+        } catch (error) {
+          console.error('Error: ', error);
+        }
       }
     }
   }
@@ -138,6 +163,10 @@ export default {
   width: 80%;
   background-color: #262626;
   color: white;
+}
+
+.error {
+  color: #f13030;
 }
 
 </style>
